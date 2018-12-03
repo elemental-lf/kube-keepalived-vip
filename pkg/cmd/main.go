@@ -34,6 +34,8 @@ import (
 	k8sexec "k8s.io/utils/exec"
 
 	"github.com/aledbf/kube-keepalived-vip/pkg/controller"
+
+	reaper "github.com/ramr/go-reaper"
 )
 
 var (
@@ -129,6 +131,9 @@ func main() {
 	if err != nil {
 		handleFatalInitError(err)
 	}
+
+	//  Start background reaping of orphaned child processes.
+	go reaper.Reap()
 
 	glog.Info("starting LVS configuration")
 	ipvsc := controller.NewIPVSController(kubeClient, *watchNamespace, *useUnicast, *configMapName, *vrid, *proxyMode, *iface)
